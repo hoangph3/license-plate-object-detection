@@ -1,0 +1,10 @@
+{
+    "thread_1": [
+        {"host": "192.168.0.5", "type": "object_detect"},
+        {"host": "192.168.0.6", "type": "number_plate"}
+    ],
+    "thread_2": [
+        {"host": "192.168.0.7", "type": "object_detect"},
+        {"host": "192.168.0.8", "type": "number_plate"}
+    ]
+}

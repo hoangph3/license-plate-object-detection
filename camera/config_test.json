@@ -1,0 +1,6 @@
+{
+    "thread_2": [
+        {"host": "http://192.168.0.7:8080/shot.jpg", "type": "object_detect"},
+        {"host": 0, "type": "number_plate"}
+    ]
+}
