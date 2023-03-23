@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from controller import create_worker_process
 import cv2
 import json
 import requests
@@ -36,14 +36,11 @@ if __name__ == "__main__":
         config = json.load(f)
 
     # Capture frames
-    procs = []
     for key_cfg, value_cfg in config.items():
         for cam_cfg in value_cfg:
-            args = ("{}_{}".format(key_cfg, cam_cfg['type']), cam_cfg['host'])
+            process_name = "{}_{}".format(key_cfg, cam_cfg['type'])
+            args = (process_name, cam_cfg['host'])
             if 'http' in str(cam_cfg['host']):
-                procs.append(Process(target=read_http_cam, args=args))
+                create_worker_process(process_name, read_http_cam, args)
             else:
-                procs.append(Process(target=read_local_cam, args=args))
-
-    for proc in procs:
-        proc.start()
+                create_worker_process(process_name, read_local_cam, args)
