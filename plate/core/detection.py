@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name, redefined-outer-name, missing-docstring, non-parent-init-called, trailing-whitespace, line-too-long
 import cv2
 import numpy as np
+from .util import preprocess_image
 
 
 class Label:
@@ -200,3 +201,11 @@ def detect_lp(model, I, max_dim, lp_threshold):
     #print(Yr.shape)
     L, TLp, lp_type, Cor = reconstruct(I, Iresized, Yr, lp_threshold)
     return L, TLp, lp_type, Cor
+
+def get_plate(model, image_path, Dmax=608, Dmin=256):
+    vehicle = preprocess_image(image_path)
+    ratio = float(max(vehicle.shape[:2])) / min(vehicle.shape[:2])
+    side = int(ratio * Dmin)
+    bound_dim = min(side, Dmax)
+    _ , LpImg, _, cor = detect_lp(model, vehicle, bound_dim, lp_threshold=0.5)
+    return LpImg, cor
