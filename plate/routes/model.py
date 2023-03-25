@@ -28,7 +28,7 @@ class DataModel(BaseModel):
     ]
 
 
-def start_serving(model_path="serving/wpod-net.json", api_host='0.0.0.0', api_port=8080, debug=True):
+def start_ocr_serving(model_path="serving/wpod-net.json", api_host='0.0.0.0', api_port=8080, debug=True):
     wpod_net = load_model(model_path)
     app = FastAPI(docs_url=None, redoc_url=None, debug=debug)
     app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -59,7 +59,7 @@ def start_serving(model_path="serving/wpod-net.json", api_host='0.0.0.0', api_po
     async def model_ocr(data: DataModel):
         with tempfile.TemporaryDirectory() as tmp_dir:
             print("Temporary Directory:", tmp_dir)
-            result = []
+            response = []
             for d in data.images:
                 image = b64_to_array(d['image'])
                 try:
@@ -69,13 +69,12 @@ def start_serving(model_path="serving/wpod-net.json", api_host='0.0.0.0', api_po
                     plate_image_path = os.path.join(tmp_dir, "plate_{}".format(os.path.basename(image_path)))
                     plt.imsave(plate_image_path, LpImg[0])
                     LpText = get_ocr(plate_image_path)
+                    response.append(LpText)
                 except Exception as e:
-                    LpText = [('', 0.0)]
                     print(e)
-                result.append(LpText)
 
         content = {
-            "plate": result,
+            "response": response,
         }
 
         return JSONResponse(content=content, status_code=200)

@@ -17,6 +17,9 @@ def get_ocr(image_path):
             text = " ".join(text)
             score = float(np.mean(score))
 
-        output.append((text, score))
+        output.append({
+            "text": text,
+            "score": round(score, 4)
+        })
 
     return output
