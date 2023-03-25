@@ -12,6 +12,7 @@ from pydantic import BaseModel
 import uvicorn
 import matplotlib.pyplot as plt
 import tempfile
+import numpy as np
 import os
 import uuid
 
@@ -62,6 +63,8 @@ def start_ocr_serving(model_path="serving/wpod-net.json", api_host='0.0.0.0', ap
             response = []
             for d in data.images:
                 image = b64_to_array(d['image'])
+                print("Plate", image.shape)
+                # image = np.array(d['image'])
                 try:
                     image_path = os.path.join(tmp_dir, "{}.jpg".format(uuid.uuid4().hex))
                     plt.imsave(image_path, image)

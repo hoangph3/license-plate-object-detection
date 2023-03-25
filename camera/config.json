@@ -1,10 +1,17 @@
 {
-    "thread_1": [
-        {"host": "192.168.0.5", "type": "object_detect"},
-        {"host": "192.168.0.6", "type": "number_plate"}
+    "camera": [
+        {
+            "thread_1": [
+                {"host": "http://192.168.0.7:8080/shot.jpg", "type": "object"},
+                {"host": 0, "type": "plate"}
+            ]
+        },
+        {
+            "thread_2": [
+                {"host": "http://192.168.0.7:8080/shot.jpg", "type": "object"}
+            ]
+        }
     ],
-    "thread_2": [
-        {"host": "192.168.0.7", "type": "object_detect"},
-        {"host": "192.168.0.8", "type": "number_plate"}
-    ]
+    "plate_serving": "http://localhost:9000/api/model/ocr",
+    "object_serving": "http://localhost:9001/api/model/object"
 }
