@@ -61,7 +61,7 @@ def start_detection_serving(model_path="serving/mb2-ssd-lite", api_host='0.0.0.0
         response = []
         for d in data.images:
             orig_image = b64_to_array(d['image'])
-            print("Object", orig_image.shape)
+            print("Object: {}".format(orig_image.shape))
             # orig_image = np.array(d['image'])
             image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
             try:
@@ -72,11 +72,11 @@ def start_detection_serving(model_path="serving/mb2-ssd-lite", api_host='0.0.0.0
                     res.append({
                         "object": class_names[labels[i]],
                         "score": round(float(probs[i]), 4),
-                        "box": box
+                        # "box": box
                     })
                 response.append(res)
             except Exception as e:
-                print(e)
+                print("Error object: {}".format(str(e)))
 
         content = {
             "response": response,

@@ -1,0 +1,29 @@
+version: "3.2"
+
+services:
+  camera:
+    container_name: alpr-camera
+    image: hoangph3/alpr-camera:1.0.0
+    network_mode: host
+    depends_on:
+      - object
+      - ocr
+    restart: always
+    volumes:
+      - ./camera/config.json:/app/config.json
+  
+  object:
+    container_name: alpr-object
+    image: hoangph3/alpr-object:1.0.0
+    ports:
+      - '9001:9001'
+
+  ocr:
+    container_name: alpr-ocr
+    image: hoangph3/alpr-ocr:1.0.0
+    ports:
+      - '9000:9000'
+
+networks:
+  default:
+    name: alpr-net

@@ -1,9 +1,9 @@
-torch==1.13.0+cpu
-torchaudio==0.13.0+cpu
-torchvision==0.14.0+cpu
 matplotlib==3.3.4
-matplotlib-inline==0.1.6
-opencv-contrib-python==4.6.0.66
-opencv-python==4.6.0.66
+opencv-python==4.0.1.24
 pandas==1.2.4
 numpy==1.21.6
+loguru==0.6.0
+uvicorn==0.17.6
+fastapi==0.78.0
+pydantic==1.8.2
+Pillow==9.4.0
