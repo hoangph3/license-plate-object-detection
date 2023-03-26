@@ -1,13 +1,8 @@
 {
     "camera": [
         {
-            "thread_1": [
+            "checkin": [
                 {"host": "http://192.168.0.7:8080/shot.jpg", "type": "object"},
-                {"host": 0, "type": "plate"}
-            ]
-        },
-        {
-            "thread_2": [
                 {"host": "http://192.168.0.7:8080/shot.jpg", "type": "plate"}
             ]
         }

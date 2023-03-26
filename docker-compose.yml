@@ -24,6 +24,14 @@ services:
     ports:
       - '9000:9000'
 
+  redis:
+    container_name: alpr-redis
+    image: redis:7.0.4
+    ports:
+      - '6379:6379'
+    # volumes:
+      # - ./volumes/redis:/data
+
 networks:
   default:
     name: alpr-net

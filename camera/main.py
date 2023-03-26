@@ -3,6 +3,8 @@ import json
 import requests
 import numpy as np
 import imutils
+from loguru import logger
+import redis
 import os
 
 from util.controller import create_worker_process
@@ -14,7 +16,12 @@ os.environ['DISPLAY'] = ':0'
 with open('config.json') as f:
     configs = json.load(f)
 
+# Log
+logger.add('app.log', rotation="500 MB")
+
 def read_frame(config: dict):
+    r = redis.Redis(host="127.0.0.1", port=6379, db=0)
+
     camera = {}
     for k, v in config.items():
         for cam in v:
@@ -23,7 +30,7 @@ def read_frame(config: dict):
             else:
                 camera["{}_{}".format(k, cam['type'])] = cam['host']
 
-    print("Camera: {}".format(camera))
+    logger.info("Camera: {}".format(camera))
     while True:
         data = {}
         for name_capture, video_capture in camera.items():
@@ -35,19 +42,18 @@ def read_frame(config: dict):
                     img = imutils.resize(img, width=500, height=900)
                     # cv2.imshow(name_capture, img)  # not working with docker because it not have GUI
                     data[name_capture] = img
-                except:
-                    print("Camera '{}' not connected!".format(name_capture))
+                except Exception as e:
+                    pass
             else:
                 ret, img = video_capture.read()
                 if ret:
                     # cv2.imshow(name_capture, img)  # not working with docker because it not have GUI
                     data[name_capture] = img
-                else:
-                    print("Camera '{}' not connected!".format(name_capture))
 
         response = {}
         connected = {}
         for task, payload in data.items():
+            connected[task] = True
             if 'object' in task:
                 try:
                     r = requests.post(
@@ -55,7 +61,6 @@ def read_frame(config: dict):
                         json={"images": [{"image": array_to_b64(payload)}]}
                     )
                     response[task] = r.json()
-                    connected[task] = True
                 except:
                     connected[task] = False
             elif 'plate' in task:
@@ -65,12 +70,18 @@ def read_frame(config: dict):
                         json={"images": [{"image": array_to_b64(payload)}]}
                     )
                     response[task] = r.json()
-                    connected[task] = True
                 except:
                     connected[task] = False
             else:
                 raise ValueError("The camera type is wrong. It should be one of 'object' or 'plate'.")
-        print("Connected: {}, Response: {}".format(connected, response))
+        # push result into queue
+        result = {'connected': connected, 'response': response}
+        logger.info(json.dumps(result))
+        try:
+            r.lpop("alpr")
+            r.rpush("alpr", json.dumps(result))
+        except Exception as e:
+            pass
 
         # Press Esc key to exit
         if cv2.waitKey(1) == 27:
